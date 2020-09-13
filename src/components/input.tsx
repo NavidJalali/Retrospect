@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import NoOp from '../constants/noop'
 
 const Flex = styled.div`
   display: flex;
@@ -9,8 +10,8 @@ const Flex = styled.div`
 
 const StyledInput = styled.input`
   width: 230px;
-  height: 30px;
-  border-radius: 0 30px 30px 0;
+  height: 40px;
+  border-radius: 0 40px 40px 0;
   border: 2px solid white;
   border-left: 0px transparent solid;
   background: transparent;
@@ -26,7 +27,7 @@ const StyledInput = styled.input`
 `
 
 const Tag = styled.div`
-  border-radius: 30px 0 0 30px;
+  border-radius: 40px 0 0 40px;
   font-size: 14px;
   width: 70px;
   border: 2px white solid;
@@ -39,14 +40,22 @@ const Tag = styled.div`
 
 interface InputProps {
   text: string
-  placeholder: string
+  placeholder?: string
+  value?: string
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const Input: React.FC<InputProps> = props => {
   return (
     <Flex>
       <Tag>{props.text}</Tag>
-      <StyledInput placeholder={props.placeholder} />
+      <StyledInput
+        onChange={event => {
+          props.onChange ? props.onChange(event) : NoOp()
+        }}
+        value={props.value ?? ''}
+        placeholder={props.placeholder}
+      />
     </Flex>
   )
 }

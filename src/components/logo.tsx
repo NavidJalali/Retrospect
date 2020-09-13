@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
 interface LogoProps {
   color: string
@@ -12,7 +13,11 @@ const Span = styled.span`
 `
 
 const Logo: React.FC<LogoProps> = props => {
-  return <Span color={props.color}>Retrospect</Span>
+  return (
+    <Span color={props.color}>
+      <Link to="/">Retrospect</Link>
+    </Span>
+  )
 }
 
 export default Logo
