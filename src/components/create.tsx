@@ -10,6 +10,9 @@ import Background from './background'
 import Menu from './menu'
 import { State } from '../state'
 import { setUsername, setRetroId } from '../actions'
+import Message from './message'
+import firebase from '../firebase'
+import { generateRetroCreatedEvent } from '../event'
 
 interface CreateProps {
   username: string
@@ -20,8 +23,22 @@ type Props = CreateProps & DispatchProp
 
 const Create: React.FC<Props> = props => {
   const [usernameField, setUsernameField] = useState<string>(props.username)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+
   const retroId = uuid().toString()
   const history = useHistory()
+
+  const createRetro = () => {
+    firebase
+      .firestore()
+      .collection(retroId)
+      .add(generateRetroCreatedEvent(usernameField))
+      .then(data => {
+        console.log({ data })
+        history.push(`/retro/${retroId}`)
+      })
+  }
+
   return (
     <>
       <Background />
@@ -38,11 +55,18 @@ const Create: React.FC<Props> = props => {
         <Button
           text="Create Retro 🚀"
           onClick={() => {
-            props.dispatch(setUsername(usernameField))
-            props.dispatch(setRetroId(retroId))
-            history.push(`/retro/${retroId}`)
+            console.log(usernameField)
+            if (usernameField === '' || usernameField === undefined) {
+              setErrorMessage('Name cannot be empty.')
+            } else {
+              setErrorMessage('')
+              props.dispatch(setUsername(usernameField))
+              props.dispatch(setRetroId(retroId))
+              createRetro()
+            }
           }}
         />
+        <Message message={errorMessage} />
       </Menu>
     </>
   )

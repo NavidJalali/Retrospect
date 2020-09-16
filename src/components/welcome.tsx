@@ -12,22 +12,17 @@ const Menu = styled.div`
   align-items: center;
 `
 
-interface WelcomeProps {
-  onJoin: () => void
-  onCreate: () => void
-}
-
-const Welcome: React.FC<WelcomeProps> = props => {
+const Welcome = () => {
   return (
     <>
       <Background />
       <Menu>
         <Logo color="white" />
         <Link to="/join">
-          <Button text="Join a Retro" onClick={props.onJoin} />
+          <Button text="Join a Retro" />
         </Link>
         <Link to="/create">
-          <Button text="Create a Retro" onClick={props.onCreate} />
+          <Button text="Create a Retro" />
         </Link>
       </Menu>
     </>

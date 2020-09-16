@@ -35,21 +35,10 @@ const App = () => {
           <Create />
         </Route>
         <Route path="/join">
-          <Join
-            onLaunch={() => {
-              console.log('launched!')
-            }}
-          />
+          <Join />
         </Route>
         <Route path="/">
-          <Welcome
-            onJoin={() => {
-              console.log('join')
-            }}
-            onCreate={() => {
-              console.log('create')
-            }}
-          />
+          <Welcome />
         </Route>
       </Switch>
     </Router>

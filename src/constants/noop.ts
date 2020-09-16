@@ -1,2 +1,1 @@
-const NoOp = () => {}
-export default NoOp
+export const NoOp = () => {}

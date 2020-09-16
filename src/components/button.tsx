@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { NoOp } from '../constants/noop'
 
 const StyledButton = styled.button`
   width: 300px;
@@ -25,14 +26,14 @@ const StyledButton = styled.button`
 
 interface ButtonProps {
   text: string
-  onClick: () => void
+  onClick?: () => void
 }
 
 const Button: React.FC<ButtonProps> = props => {
   return (
     <StyledButton
       onClick={() => {
-        props.onClick()
+        props.onClick ? props.onClick() : NoOp()
       }}
     >
       {props.text}
