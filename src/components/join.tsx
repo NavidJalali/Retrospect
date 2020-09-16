@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, RouteComponentProps, withRouter } from 'react-router-dom'
 import { connect, DispatchProp } from 'react-redux'
 import { v4 as uuid, parse } from 'uuid'
 
@@ -12,18 +12,26 @@ import { State } from '../state'
 import { setUsername, setRetroId } from '../actions'
 import Message from './message'
 import firebase from '../firebase'
-import { generateParticipantJoinedEvent } from '../event'
+import { generateParticipantJoinedEvent, Event } from '../event'
 
-interface JoinProps {
+interface JoinProps extends RouteComponentProps<MatchParams> {}
+
+interface StateProps {
   username: string
   retroId: string
 }
 
-type Props = JoinProps & DispatchProp
+interface MatchParams {
+  id: string
+}
+
+type Props = JoinProps & DispatchProp & StateProps
 
 const Join: React.FC<Props> = props => {
   const [usernameField, setUsernameField] = useState<string>(props.username)
-  const [retroIdField, setRetroIdField] = useState<string>(props.retroId)
+  const [retroIdField, setRetroIdField] = useState<string>(
+    props.match.params.id ?? props.retroId
+  )
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const retroId = uuid().toString()
@@ -36,12 +44,26 @@ const Join: React.FC<Props> = props => {
       .get()
       .then(
         snap => {
-          if (snap.docs.find(doc => doc.data().kind === 'Retro Created')) {
-            firebase
-              .firestore()
-              .collection(retroIdField)
-              .add(generateParticipantJoinedEvent(usernameField))
-              .then(() => history.push(`/retro/${retroIdField}`))
+          if (
+            snap.docs.find(
+              doc => (doc.data() as Event).kind === 'Retro Created'
+            )
+          ) {
+            if (
+              !snap.docs.find(
+                doc =>
+                  (doc.data() as Event).participantJoinedParams
+                    ?.participantName === usernameField
+              )
+            ) {
+              firebase
+                .firestore()
+                .collection(retroIdField)
+                .add(generateParticipantJoinedEvent(usernameField))
+                .then(() => history.push(`/retro/${retroIdField}`))
+            } else {
+              history.push(`/retro/${retroIdField}`)
+            }
           } else {
             setErrorMessage('This retro is malformed.')
           }
@@ -100,9 +122,9 @@ const Join: React.FC<Props> = props => {
     </>
   )
 }
-const mapStateToProps = (state: State): JoinProps => ({
+const mapStateToProps = (state: State, ownProps: JoinProps): StateProps => ({
   username: state.username,
   retroId: state.retroId
 })
 
-export default connect(mapStateToProps)(Join)
+export default withRouter(connect(mapStateToProps)(Join))

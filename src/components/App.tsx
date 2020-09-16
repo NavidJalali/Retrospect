@@ -34,6 +34,9 @@ const App = () => {
         <Route path="/create">
           <Create />
         </Route>
+        <Route path="/join/:id">
+          <Join />
+        </Route>
         <Route path="/join">
           <Join />
         </Route>
